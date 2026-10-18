@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sorteio Oficial - Desapega Manaus</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Biblioteca de Confetes (Canvas Confetti) -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --primary: #008f5d;
+            --primary-dark: #006b44;
+            --secondary: #0056b3;
+            --secondary-dark: #003d82;
+            --bg-color: #f4f7f6;
+            --text-color: #333333;
+            --card-bg: #ffffff;
+            --border-color: #e0e0e0;
+            --shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #ffffff;
+            padding: 30px 20px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            font-weight: 800;
+        }
+
+        header p {
+            font-size: 0.95rem;
+            opacity: 0.95;
+            line-height: 1.4;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+        }
+
+        .card h2 {
+            font-size: 1.25rem;
+            margin-bottom: 20px;
+            color: var(--secondary-dark);
+            border-bottom: 2px solid var(--bg-color);
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus {
+            border-color: var(--primary);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-danger {
+            background-color: #d9534f;
+            color: white;
+            margin-top: 10px;
+        }
+
+        .btn-danger:hover {
+            background-color: #c9302c;
+        }
+
+        .message {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            text-align: center;
+            display: none;
+        }
+
+        .message.success {
+            background-color: #e1f5fe;
+            color: #0277bd;
+            border: 1px solid #b3e5fc;
+            display: block;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .participants-list {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            list-style: none;
+        }
+
+        .participants-list li {
+            padding: 10px 15px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+        }
+
+        .participants-list li:last-child {
+            border-bottom: none;
+        }
+
+        .participants-list li span:nth-child(2) {
+            color: #666;
+            font-size: 0.85rem;
+        }
+
+        .empty-list {
+            padding: 15px;
+            text-align: center;
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        .winner-display {
+            background: linear-gradient(135deg, #fff3cd, #ffeeba);
+            border: 2px solid #ffeeba;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .winner-display h3 {
+            color: #856404;
+            margin-bottom: 8px;
+            font-size: 1.2rem;
+        }
+
+        .winner-display p {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #333;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #777;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Cabeçalho -->
+        <header>
+            <h1>Sorteio Oficial - Desapega Manaus</h1>
+            <p>O espaço oficial para os membros participarem dos sorteios do grupo com total transparência!</p>
+        </header>
+
+        <!-- Formulário de Inscrição -->
+        <div class="card">
+            <h2>Cadastre-se no Sorteio</h2>
+            <form id="registrationForm">
+                <div class="form-group">
+                    <label for="fullName">Nome Completo</label>
+                    <input type="text" id="fullName" placeholder="Digite seu nome completo" required>
+                </div>
+                <div class="form-group">
+                    <label for="whatsapp">WhatsApp</label>
+                    <input type="tel" id="whatsapp" placeholder="(92) 99999-9999" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Participar do Sorteio</button>
+            </form>
+            <div id="formMessage" class="message"></div>
+        </div>
+
+        <!-- Lista de Participantes -->
+        <div class="card">
+            <h2>Participantes Inscritos</h2>
+            <div class="stats">
+                <span>Total de Inscritos:</span>
+                <span id="totalCount">0</span>
+            </div>
+            <ul id="participantsList" class="participants-list">
+                <li class="empty-list">Nenhum participante cadastrado ainda.</li>
+            </ul>
+        </div>
+
+        <!-- Painel do Administrador -->
+        <div class="card">
+            <h2>Painel do Administrador</h2>
+            <button id="drawButton" class="btn btn-primary" style="background-color: var(--secondary);">Realizar Sorteio</button>
+            
+            <div id="winnerDisplay" class="winner-display">
+                <h3>🎉 Vencedor(a) Sorteado(a)! 🎉</h3>
+                <p id="winnerInfo"></p>
+            </div>
+
+            <button id="clearButton" class="btn btn-danger">Limpar Lista</button>
+        </div>
+
+        <footer>
+            &copy; 2026 Desapega Manaus - Todos os direitos reservados.
+        </footer>
+    </div>
+
+    <script>
+        // Chave do localStorage
+        const STORAGE_KEY = 'desapega_manaus_participants';
+
+        // Elementos do DOM
+        const form = document.getElementById('registrationForm');
+        const fullNameInput = document.getElementById('fullName');
+        const whatsappInput = document.getElementById('whatsapp');
+        const formMessage = document.getElementById('formMessage');
+        const totalCountEl = document.getElementById('totalCount');
+        const participantsListEl = document.getElementById('participantsList');
+        const drawButton = document.getElementById('drawButton');
+        const winnerDisplay = document.getElementById('winnerDisplay');
+        const winnerInfo = document.getElementById('winnerInfo');
+        const clearButton = document.getElementById('clearButton');
+
+        // Carregar participantes do localStorage
+        function getParticipants() {
+            const data = localStorage.getItem(STORAGE_KEY);
+            return data ? JSON.parse(data) : [];
+        }
+
+        // Salvar participantes no localStorage
+        function saveParticipants(participants) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(participants));
+        }
+
+        // Atualizar a interface com os dados atuais
+        function updateUI() {
+            const participants = getParticipants();
+            totalCountEl.textContent = participants.length;
+
+            if (participants.length === 0) {
+                participantsListEl.innerHTML = '<li class="empty-list">Nenhum participante cadastrado ainda.</li>';
+                return;
+            }
+
+            participantsListEl.innerHTML = '';
+            participants.forEach((p) => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span><strong>${p.name}</strong> (Nº ${p.luckyNumber})</span>
+                    <span>${p.whatsapp}</span>
+                `;
+                participantsListEl.appendChild(li);
+            });
+        }
+
+        // Gerar número da sorte aleatório entre 1000 e 9999
+        function generateLuckyNumber() {
+            return Math.floor(1000 + Math.random() * 9000);
+        }
+
+        // Evento de Envio do Formulário
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = fullNameInput.value.trim();
+            const whatsapp = whatsappInput.value.trim();
+
+            if (!name || !whatsapp) {
+                alert('Por favor, preencha todos os campos.');
+                return;
+            }
+
+            const participants = getParticipants();
+            const luckyNumber = generateLuckyNumber();
+
+            // Adicionar novo participante
+            participants.push({ name, whatsapp, luckyNumber });
+            saveParticipants(participants);
+            updateUI();
+
+            // Exibir mensagem de sucesso
+            formMessage.textContent = `Inscrição realizada com sucesso! Seu número da sorte é: ${luckyNumber}`;
+            formMessage.className = 'message success';
+
+            // Limpar formulário
+            form.reset();
+
+            // Esconder mensagem após 5 segundos
+            setTimeout(() => {
+                formMessage.style.display = 'none';
+                formMessage.className = 'message';
+            }, 6000);
+        });
+
+        // Evento de Realizar Sorteio
+        drawButton.addEventListener('click', () => {
+            const participants = getParticipants();
+
+            if (participants.length === 0) {
+                alert('Não há participantes cadastrados para realizar o sorteio!');
+                return;
+            }
+
+            // Escolher índice aleatório
+            const randomIndex = Math.floor(Math.random() * participants.length);
+            const winner = participants[randomIndex];
+
+            // Exibir vencedor
+            winnerInfo.innerHTML = `${winner.name}<br><small>WhatsApp: ${winner.whatsapp} | Nº da Sorte: ${winner.luckyNumber}</small>`;
+            winnerDisplay.style.display = 'block';
+
+            // Disparar confetes 🎉
+            confetti({
+                particleCount: 150,
+                spread: 80,
+                origin: { y: 0.6 }
+            });
+        });
+
+        // Evento de Limpar Lista
+        clearButton.addEventListener('click', () => {
+            if (confirm('Tem certeza que deseja limpar toda a lista de participantes? Esta ação não pode ser desfeita.')) {
+                localStorage.removeItem(STORAGE_KEY);
+                updateUI();
+                winnerDisplay.style.display = 'none';
+                alert('Lista limpa com sucesso!');
+            }
+        });
+
+        // Inicializar a tela ao carregar a página
+        updateUI();
+    </script>
+</body>
+</html>
